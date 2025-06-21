@@ -39,7 +39,6 @@ resource "aws_security_group" "dns" {
 # 2) Elastic IP
 resource "aws_eip" "this" {
   instance = module.vm.instance_id
-  vpc      = true
 }
 
 # 3) Render your named.conf into a user_data script

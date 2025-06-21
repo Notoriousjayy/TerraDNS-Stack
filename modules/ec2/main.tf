@@ -73,7 +73,7 @@ resource "aws_instance" "this" {
   )
 
   # allow modules/dns-server (or you) to inject cloud-init / bind install
-  user_data = var.user_data
+  user_data_base64            = var.user_data
 
   tags = merge(
     {
