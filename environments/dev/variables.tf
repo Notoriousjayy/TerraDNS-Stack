@@ -1,3 +1,5 @@
+# environments/dev/variables.tf
+
 variable "aws_region" {
   type        = string
   description = "AWS region"
@@ -15,7 +17,7 @@ variable "public_subnets" {
 
 variable "availability_zones" {
   type        = list(string)
-  description = "AZs for subnets"
+  description = "Availability zones for your subnets"
 }
 
 variable "instance_type" {
@@ -23,18 +25,18 @@ variable "instance_type" {
   description = "EC2 instance type"
 }
 
-variable "instance_name" {
-  type        = string
-  description = "Name tag for EC2 instance"
-}
-
 variable "key_name" {
   type        = string
-  description = "SSH key pair name"
+  description = "Name of the SSH key pair"
 }
 
 variable "environment" {
-  description = "Deployment environment"
   type        = string
+  description = "Deployment environment"
   default     = "dev"
+}
+
+variable "zone_name" {
+  type        = string
+  description = "DNS zone to serve (e.g. example.com)"
 }

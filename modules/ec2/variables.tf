@@ -1,3 +1,5 @@
+// modules/ec2/variables.tf
+
 variable "vpc_id" {
   description = "VPC ID to launch instance into"
   type        = string
@@ -44,4 +46,32 @@ variable "ssh_ingress_cidr" {
   description = "CIDR block allowed to SSH in"
   type        = string
   default     = "0.0.0.0/0"
+}
+
+# — NEW: allow attaching extra security groups (e.g. a DNS SG) —
+variable "extra_security_group_ids" {
+  description = "Additional Security Group IDs to attach"
+  type        = list(string)
+  default     = []
+}
+
+# — NEW: arbitrary cloud-init / user data —
+variable "user_data" {
+  description = "User data script (base64-encoded or plain)"
+  type        = string
+  default     = ""
+}
+
+# — NEW: control public-IP assignment —
+variable "associate_public_ip" {
+  description = "Whether to assign a public IP address"
+  type        = bool
+  default     = true
+}
+
+# — NEW: extra tags to merge into all resources —
+variable "tags" {
+  description = "Additional tags to apply to SG & EC2"
+  type        = map(string)
+  default     = {}
 }

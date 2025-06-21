@@ -1,3 +1,5 @@
+// modules/ec2/main.tf
+
 ##############################
 # Data Source: Latest Debian AMI
 ##############################
@@ -48,9 +50,10 @@ resource "aws_security_group" "ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "${var.instance_name}-sg"
-  }
+  tags = merge(
+    { Name = "${var.instance_name}-sg" },
+    var.tags
+  )
 }
 
 ##############################
@@ -60,12 +63,23 @@ resource "aws_instance" "this" {
   ami                         = data.aws_ami.debian.id
   instance_type               = var.instance_type
   key_name                    = var.key_name
-  vpc_security_group_ids      = [aws_security_group.ssh.id]
   subnet_id                   = var.public_subnet_ids[0]
-  associate_public_ip_address = true
+  associate_public_ip_address = var.associate_public_ip
 
-  tags = {
-    Name        = var.instance_name
-    Environment = var.environment
-  }
+  # combine the SSH SG with any extras (e.g. a DNS-SG)
+  vpc_security_group_ids = concat(
+    [aws_security_group.ssh.id],
+    var.extra_security_group_ids
+  )
+
+  # allow modules/dns-server (or you) to inject cloud-init / bind install
+  user_data = var.user_data
+
+  tags = merge(
+    {
+      Name        = var.instance_name
+      Environment = var.environment
+    },
+    var.tags
+  )
 }

@@ -1,15 +1,15 @@
-output "instance_public_ip" {
-  description = "Public IP of the Debian EC2 instance"
-  value       = module.ec2.public_ip
-}
+# environments/dev/outputs.tf
 
-output "instance_public_dns" {
-  description = "Public DNS of the Debian EC2 instance"
-  value       = module.ec2.public_dns
+output "dns_name_servers" {
+  description = "Elastic IP addresses of the master and slave DNS servers"
+  value = concat(
+    [ module.dns_master.eip ],
+    [ for s in values(module.dns_slave) : s.eip ]
+  )
 }
 
 output "private_key_pem" {
-  description = "The generated private key; save this securely!"
+  description = "The generated SSH private key; save this securely!"
   value       = tls_private_key.ssh.private_key_pem
   sensitive   = true
 }
