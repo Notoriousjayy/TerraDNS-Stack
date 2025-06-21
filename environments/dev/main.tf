@@ -41,6 +41,8 @@ module "dns_master" {
   public_subnet_ids = module.vpc.public_subnet_ids
   instance_type     = var.instance_type
   key_name          = aws_key_pair.debian.key_name
+  environment       = var.environment
+  instance_name     = "dns-master"
 }
 
 # Slave roles
@@ -61,4 +63,6 @@ module "dns_slave" {
   public_subnet_ids = module.vpc.public_subnet_ids
   instance_type     = var.instance_type
   key_name          = aws_key_pair.debian.key_name
+  environment       = var.environment
+  instance_name     = "dns-${each.key}"
 }
