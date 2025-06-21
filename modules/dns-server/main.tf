@@ -1,22 +1,28 @@
+# modules/dns-server/main.tf
+
 # 1) DNS SG
 resource "aws_security_group" "dns" {
   name        = "${var.instance_name}-dns-sg"
-  description = "Allow DNS queries & zone transfers"
+  description = "Allow DNS queries, zone transfers, SSH, and ping"
   vpc_id      = var.vpc_id
 
+  # DNS over UDP
   ingress {
     from_port   = 53
     to_port     = 53
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # DNS over TCP
   ingress {
     from_port   = 53
     to_port     = 53
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  # SSH if you still want console access
+
+  # SSH access
   ingress {
     from_port   = 22
     to_port     = 22
@@ -24,6 +30,16 @@ resource "aws_security_group" "dns" {
     cidr_blocks = [var.ssh_ingress_cidr]
   }
 
+  # ICMP (ping) from same CIDR as SSH
+  ingress {
+    description = "Allow ICMP echo (ping)"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = [var.ssh_ingress_cidr]
+  }
+
+  # Allow all outbound
   egress {
     from_port   = 0
     to_port     = 0
@@ -59,11 +75,11 @@ module "vm" {
   key_name          = var.key_name
 
   # DNS-specific extras
-  extra_security_group_ids = [ aws_security_group.dns.id ]
+  extra_security_group_ids = [aws_security_group.dns.id]
   user_data                = base64encode(data.template_file.bind.rendered)
   associate_public_ip      = false    # since you attach EIP explicitly
 
-  environment = var.environment
+  environment   = var.environment
   instance_name = var.instance_name
   tags = {
     Role = var.role

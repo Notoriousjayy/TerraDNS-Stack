@@ -12,6 +12,12 @@ crash.log
 override.tf
 override.tf.json
 
+# Private key PEM files
+*.pem
+
 # Sensitive variable files (but keep the example!)
 *.tfvars
 !terraform.tfvars.example
+
+# Allow PDF files
+!*.pdf
