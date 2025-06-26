@@ -3,7 +3,7 @@
 # 1) DNS SG
 resource "aws_security_group" "dns" {
   name        = "${var.instance_name}-dns-sg"
-  description = "Allow DNS queries, zone transfers, SSH, and ping"
+  description = "Allow DNS queries, zone transfers, SSH, ping, HTTP and HTTPS"
   vpc_id      = var.vpc_id
 
   # DNS over UDP
@@ -37,6 +37,24 @@ resource "aws_security_group" "dns" {
     to_port     = -1
     protocol    = "icmp"
     cidr_blocks = [var.ssh_ingress_cidr]
+  }
+
+  # HTTP
+  ingress {
+    description = "Allow HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTPS
+  ingress {
+    description = "Allow HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow all outbound
